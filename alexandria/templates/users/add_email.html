@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+<div>
+<br>
+<p>
+Your Email Addresses:
+</p>
+<ul>
+{% for email in emails %}
+         
+         <li>{{email}}</li>
+         
+    {% endfor %}
+</ul>
+<form id="EmailForm" method="POST" action="{{url_for('users.add_email')}}" role="add_email">
+      {{ email_form.hidden_tag() }}
+      <div class="form-group col-md-4" >
+        {{ email_form.email(placeholder="New Email Address", class_="form-control") }}
+      </div>
+      {{ email_form.email_submit(class_="btn btn-default")}}
+    </form>
+</div>
+{% endblock %}

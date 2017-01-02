@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block content %}
+<div>
+<br>
+<h4>{{user.first_name}} {{user.last_name}}</h4>
+<p>
+Email Addresses:
+</p>
+<ul>
+{% for email in emails %}
+         
+         <li>{{email}}</li>
+         
+    {% endfor %}
+</ul>
+</div>
+{% endblock %}
