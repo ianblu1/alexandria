@@ -2,7 +2,7 @@
 import pytest
 
 
-from alexandria.forms import LoginForm, ChangePasswordForm, ChangeUsernameForm
+from alexandria.forms import LoginForm, ChangePasswordForm
 #from docufind.forms.user import RegisterForm
 from .factories import UserFactory
 
