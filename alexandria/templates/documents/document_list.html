@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block content %}
+<div>
+<br>
+<ul>
+    {% for document in documents %}
+         
+         <h4>{{document.title}}</h4>
+         
+    {% endfor %}
+
+</ul>
+</div>
+{% endblock %}

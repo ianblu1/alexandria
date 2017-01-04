@@ -25,6 +25,9 @@
     {% if current_user.is_authenticated %}
     <ul class="nav navbar-nav navbar-right">
         <li>
+          <a href="{{url_for('documents.new_document')}}">New Document</a>
+        </li>
+        <li>
             <p class="navbar-text"><a class="navbar-link" href="{{ url_for('users.user_profile', id=current_user.id) }}">Logged in as {{ current_user.user_name }}</a></p>
         </li>
         <li class="dropdown">

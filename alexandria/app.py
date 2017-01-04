@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template
 from alexandria.extensions import db, migrate, bcrypt, login_manager
 
-from alexandria.models import users
+from alexandria.models import users, documentlinks
 
 def create_app(config_setting='dev'):
     """An application factory, as explained here:
@@ -50,6 +50,8 @@ def register_blueprints(app):
     app.register_blueprint(users.blueprint)
     from alexandria.views import public
     app.register_blueprint(public.blueprint)
+    from alexandria.views import documents
+    app.register_blueprint(documents.blueprint)
     return None
     
 

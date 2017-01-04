@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from flask_wtf import Form 
-from wtforms import TextField, PasswordField, StringField, SubmitField
+from wtforms import TextField, PasswordField, StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 
 #from flask_login import current_user
 
 from alexandria.models.users import User
+from alexandria.models.documentlinks import DocumentLink
 
 
 class LoginForm(Form):
@@ -106,35 +107,26 @@ class ChangePasswordForm(Form):
 
         return True
 
-class ChangeUsernameForm(Form):
-    password = PasswordField('Your Password', validators=[DataRequired()])
-    username = StringField('Username', validators=[DataRequired()])
-    username2 = StringField('Confirm Username',
-                            validators=[DataRequired(), EqualTo('username', message='Usernames must match')])
+class NewDocumentForm(Form):
+    url = StringField('url', validators=[DataRequired()])
+    title = StringField('title', validators=[DataRequired()])
+    tags = StringField('tags', validators=[DataRequired()])
+    description = TextAreaField('description', validators=[DataRequired()])
 
     def __init__(self, *args, **kwargs):
-        super(ChangeUsernameForm, self).__init__(*args, **kwargs)
+        super(NewDocumentForm, self).__init__(*args, **kwargs)
         self.user = None
 
-    def add_user(self, user):
-        self.user = user
-
     def validate(self):
-        initial_validation = super(ChangeUsernameForm, self).validate()
+        initial_validation = super(NewDocumentForm, self).validate()
         if not initial_validation:
             return False
 
-        #self.user = current_user
-        if not self.user.check_password(self.password.data):
-            self.old_password.errors.append('Invalid password')
-            print('Incorrect old password')
+        document = DocumentLink.query.filter_by(url=self.url.data).first()
+        if document:
+            self.url.errors.append("Document Already Exists.")
             return False
-
-        user = User.query.filter_by(user_name=self.username.data).first()
-        if user:
-            self.username.errors.append("Username already registered")
-            return False
-
 
         return True
+
 

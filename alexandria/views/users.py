@@ -16,7 +16,7 @@ def user_list():
     user_list = User.query.all()
     return render_template('users/user_list.html', users=user_list)
 
-@blueprint.route('/<id>', methods=['GET', 'POST'])
+@blueprint.route('/<id>', methods=['GET'])
 @login_required
 def user_profile(id):
     #form = LoginForm()
