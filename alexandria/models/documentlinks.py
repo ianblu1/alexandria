@@ -26,11 +26,12 @@ class DocumentLink(db.Model):
     tags = db.relationship('Tag', secondary=documentlink_tags,
         backref=db.backref('documentlinks', lazy='dynamic'))
 
-    def __init__(self, user, url, description, title):
+    def __init__(self, user, url, title, description, slug):
         self.creating_user = user.user_name
         self.url = url
         self.description = description
         self.title = title
+        self.slug = slug
         self.date_added = dt.datetime.now()
         
 
@@ -44,3 +45,4 @@ class Tag(db.Model):
     def __init__(self, tag):
         self.tag = tag
         self.date_added = dt.datetime.now()
+

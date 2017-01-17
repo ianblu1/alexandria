@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+    <br>
+    <form action="{{ url_for('documents.search') }}" method="POST">
+    {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{form.search.label}}
+            {{form.search(placeholder="Enter your search terms here", class_="form-control")}}
+        </div>
+        <br>
+        <input class="btn btn-primary btn-submit" type="submit" value="search" />
+    </form>
+    <br>
+    <ul>
+    {% for document in documents.items %}
+         
+         <h4><a href={{document.url}} target="_blank">{{document.title}}</a></h4>
+         
+    {% endfor %}
+
+    </ul>
+    {% if documents.has_prev %}<a href="{{ url_for('search_results', page=documents.prev_num, search_form_input=form.data['search']) }}">&lt;&lt; Previous</a>{% endif %}   
+    {% if documents.has_next %} <a href="{{ url_for('search_results', page=documents.next_num, search_form_input=form.data['search']) }}">Next &gt;&gt;</a>{% endif %}
+
+</div>
+{% endblock %}

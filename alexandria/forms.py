@@ -5,7 +5,7 @@ from wtforms.validators import DataRequired, Email, EqualTo, Length
 
 #from flask_login import current_user
 
-from alexandria.models.users import User
+from alexandria.models.users import User, UserEmail
 from alexandria.models.documentlinks import DocumentLink
 
 
@@ -78,6 +78,11 @@ class EmailForm(Form):
         if not initial_validation:
             return False
 
+        email = UserEmail.query.filter_by(email=self.email.data).first()
+        if email:
+            self.email.errors.append('Email Already Registered')
+            return False
+
         return True
 
 
@@ -128,5 +133,8 @@ class NewDocumentForm(Form):
             return False
 
         return True
+
+class SearchForm(Form):
+    search = StringField('Search the docs', validators=[DataRequired()])
 
 

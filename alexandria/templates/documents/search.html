@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+    <br>
+    <form action="{{ url_for('documents.search') }}" method="POST">
+    {{ form.hidden_tag() }}
+        <div class="form-group">
+            {{form.search.label}}
+            {{form.search(placeholder="Enter your search terms here", class_="form-control")}}
+        </div>
+        <br>
+        <input class="btn btn-primary btn-submit" type="submit" value="search" />
+    </form>
+    <br>
+
+</div>
+{% endblock %}

@@ -25,6 +25,9 @@
     {% if current_user.is_authenticated %}
     <ul class="nav navbar-nav navbar-right">
         <li>
+          <a href="{{url_for('documents.search')}}">Search</a>
+        </li>
+        <li>
           <a href="{{url_for('documents.new_document')}}">New Document</a>
         </li>
         <li>

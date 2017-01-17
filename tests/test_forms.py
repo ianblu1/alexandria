@@ -2,7 +2,7 @@
 import pytest
 
 
-from alexandria.forms import LoginForm, ChangePasswordForm
+from alexandria.forms import LoginForm, ChangePasswordForm, EmailForm
 #from docufind.forms.user import RegisterForm
 from .factories import UserFactory
 
@@ -108,3 +108,18 @@ class TestChangePasswordForm:
         form.add_user(user)
         assert form.validate() is False
         assert 'Passwords must match' in form.password2.errors
+
+class TestEmailForm:
+
+    def test_validate_success(self, user, db):
+        form = EmailForm(email='test@test.com')
+        assert form.validate() is True
+
+    def test_dupe_email(self, user, db):
+        user.add_email('test@test.com')
+        db.session.add(user)
+        db.session.commit()
+        form = EmailForm(email='test@test.com')
+        assert form.validate() is False
+
+
