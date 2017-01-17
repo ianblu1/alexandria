@@ -1,4 +1,4 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, func, and_
 
 from flask import render_template, request, redirect, url_for, flash, Blueprint, current_app
 from flask_login import login_required, current_user
@@ -17,13 +17,14 @@ blueprint = Blueprint("documents", __name__, url_prefix='/documents',
 @blueprint.route('/')
 @login_required
 def document_list():
-    document_list = DocumentLink.query.all()
+    document_list = current_user.documents
     return render_template('documents/document_list.html', documents=document_list)
 
 @blueprint.route('/new_document', methods=['GET', 'POST'])
 @login_required
 def new_document():
     form = NewDocumentForm()
+    form.add_user(current_user)
     if form.validate_on_submit():
         print(form.url.data)
         url = form.url.data
@@ -84,7 +85,10 @@ def search_results(page=1):
                             )
                         ).label("search_rank")
                     ).filter(
-                        DocumentLink.document_vector.match(search_params)
+                        and_(
+                        DocumentLink.document_vector.match(search_params),
+                        DocumentLink.creating_user == current_user.user_name
+                        )
                     ).order_by(
                         db.func.ts_rank(
                             DocumentLink.document_vector, db.func.to_tsquery(search_params)

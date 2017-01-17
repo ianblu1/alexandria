@@ -13,13 +13,15 @@ blueprint = Blueprint("users", __name__, url_prefix='/users',
 @blueprint.route('/')
 @login_required
 def user_list():
+    if not current_user.is_admin:
+        return render_template('401_admin.html')
+
     user_list = User.query.all()
     return render_template('users/user_list.html', users=user_list)
 
 @blueprint.route('/<id>', methods=['GET'])
 @login_required
 def user_profile(id):
-    #form = LoginForm()
     user = User.query.filter_by(id=id).first()
     user_emails = [user_email.email for user_email in user.emails]
     return render_template('users/user_profile.html', user=user, emails=user_emails)
@@ -27,7 +29,6 @@ def user_profile(id):
 @blueprint.route('/add_email', methods=['GET', 'POST'])
 @login_required
 def add_email():
-    #form = LoginForm()
     email_form = EmailForm()
     user = current_user
     if request.method == 'POST':

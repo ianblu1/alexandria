@@ -122,6 +122,9 @@ class NewDocumentForm(Form):
         super(NewDocumentForm, self).__init__(*args, **kwargs)
         self.user = None
 
+    def add_user(self, user):
+        self.user = user
+
     def validate(self):
         initial_validation = super(NewDocumentForm, self).validate()
         if not initial_validation:
@@ -129,8 +132,9 @@ class NewDocumentForm(Form):
 
         document = DocumentLink.query.filter_by(url=self.url.data).first()
         if document:
-            self.url.errors.append("Document Already Exists.")
-            return False
+            if document.creating_user == self.user.user_name:
+                self.url.errors.append("Document Already Exists.")
+                return False
 
         return True
 

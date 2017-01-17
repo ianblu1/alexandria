@@ -3,6 +3,8 @@ from sqlalchemy.dialects.postgresql import TSVECTOR, BYTEA
 import datetime as dt
 import hashlib as hl
 
+from alexandria.models.documentlinks import DocumentLink
+
 class User(db.Model):
     __tablename__ = 'users'
 
@@ -19,17 +21,14 @@ class User(db.Model):
     created_at = db.Column(db.DateTime)
     emails = db.relationship('UserEmail', backref=db.backref('User'),
                              lazy='dynamic')
-    #documents = db.relationship('DocumentLink', backref='User',
-    #                            lazy='dynamic')
+    documents = db.relationship('DocumentLink', backref='User',
+                                lazy='dynamic')
 
     def __init__(self,email,user_name, first_name, last_name, password, is_admin=False, active=True):
-        #self.email = email
-        #self.emails.append(email)
         self.emails = [UserEmail(email, user_name)]
         self.first_name = first_name
         self.last_name = last_name
         self.user_name = user_name
-        #self.password = self.set_password(password)
         self.active = active
         self.is_admin = is_admin
         self.created_at = dt.datetime.now()
