@@ -32,7 +32,11 @@ class User(db.Model):
         self.active = active
         self.is_admin = is_admin
         self.created_at = dt.datetime.now()
-        self.id = hl.md5(str("_".join([email, user_name, first_name, last_name])).encode('utf-8')  ).hexdigest()
+        if (first_name is not None) & (last_name is not None):
+            self.id = hl.md5(str("_".join([email, user_name, first_name, last_name])).encode('utf-8')  ).hexdigest()
+        else:
+            self.id = hl.md5(str("_".join([email, user_name])).encode('utf-8')  ).hexdigest()
+
         self.is_deleted = False
         if password:
             self.set_password(password)

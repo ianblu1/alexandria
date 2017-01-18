@@ -47,13 +47,18 @@ def about():
 def register():
     form = RegisterForm(request.form, csrf_enabled=False)
     if form.validate_on_submit():
-        #new_user = User.create(username=form.username.data,
-        #                       first_name=form.first_name.data,
-        #                       last_name=form.last_name.data,
-        #                       email=form.email.data,
-        #                       password=form.password.data,
-        #                       active=True)
-        flash("Thank you for registering. You can now log in.", 'success')
+        new_user = User(
+                        email=form.email.data,
+                        user_name=form.username.data,
+                        first_name=None,
+                        last_name=None, 
+                        password=form.password.data
+                        )
+        new_user.authenticated=True
+        db.session.add(new_user)
+        db.session.commit()
+        login_user(new_user, remember=True)
+        flash("Thank you for registering. You are now logged in.", 'success')
         return redirect(url_for('public.home'))
     else:
         flash_errors(form)
@@ -69,7 +74,6 @@ def logout():
     db.session.add(user)
     db.session.commit()
     logout_user()
-    #logout_user()
     flash('You are logged out.', 'info')
     return redirect(url_for('public.home'))
 

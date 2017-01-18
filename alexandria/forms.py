@@ -40,8 +40,8 @@ class LoginForm(Form):
 
 class RegisterForm(Form):
     username = TextField('Username', validators=[DataRequired(), Length(min=3, max=25)])
-    first_name = TextField('first_name', validators=[DataRequired(), Length(min=3, max=25)])
-    last_name = TextField('last_name', validators=[DataRequired(), Length(min=3, max=25)])
+    #first_name = TextField('first_name', validators=[DataRequired(), Length(min=3, max=25)])
+    #last_name = TextField('last_name', validators=[DataRequired(), Length(min=3, max=25)])
     email = TextField('Email', validators=[DataRequired(), Email(), Length(min=6, max=40)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6, max=40)])
     confirm = PasswordField('Verify password', [DataRequired(), EqualTo('password', message='Passwords must match')])
@@ -55,14 +55,14 @@ class RegisterForm(Form):
         if not initial_validation:
             return False
         
-        # user = User.query.filter_by(username=self.username.data).first()
-        # if user:
-        #     self.username.errors.append("Username already registered")
-        #     return False
-        # user = User.query.filter_by(email=self.email.data).first()
-        # if user:
-        #     self.email.errors.append("Email already registered")
-        #     return False
+        user = User.query.filter_by(user_name=self.username.data).first()
+        if user:
+            self.username.errors.append("Username already registered")
+            return False
+        email = UserEmail.query.filter_by(email=self.email.data).first()
+        if email:
+            self.email.errors.append('Email Already Registered')
+            return False
         return True
 
 class EmailForm(Form):
