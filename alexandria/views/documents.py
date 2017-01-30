@@ -1,15 +1,16 @@
 from sqlalchemy import select, func, and_
+from collections import namedtuple
 
 from flask import render_template, request, redirect, url_for, flash, Blueprint, current_app
 from flask_login import login_required, current_user
 
 from alexandria.extensions import db
 #from alexandria.forms import LoginForm, EmailForm, ChangePasswordForm
-from alexandria.forms import NewDocumentForm, SearchForm
+from alexandria.forms import NewDocumentForm, SearchForm, EditDocumentForm
 from alexandria.utils import flash_errors, parse_search_params
 #from alexandria.models.users import User
 from alexandria.models.documentlinks import DocumentLink, Tag
-from alexandria.parsers import DocumentParser
+from alexandria.parsers import DocumentParser, parse_tags
 
 blueprint = Blueprint("documents", __name__, url_prefix='/documents',
                       static_folder="../static")
@@ -57,6 +58,69 @@ def new_document():
 
     return render_template('documents/new_document.html', form=form)
 
+@blueprint.route('/edit/<id>', methods=['GET', 'POST'])
+@login_required
+def edit_document(id):
+    #return "Hello {}!".format(name)
+    queried_document = DocumentLink.query.filter_by(id=id).first()
+    #print([tag.tag for tag in queried_link.tags])
+    linktype = namedtuple('linktype', ['url', 'title', 'description', 'tags'])
+    l = linktype(
+        url = queried_document.url,
+        title = queried_document.title,
+        description = queried_document.description,
+        tags = ','.join([tag.tag for tag in queried_document.tags])
+        #slug = queried_link.slug,
+        #document_vector = queried_link.document_vector
+        )
+    form = EditDocumentForm(obj=l)
+    #if request.method == 'POST':
+    if form.validate_on_submit():
+        print(request.form)
+        new_url = request.form['url']
+        new_title = request.form['title']
+        new_description = request.form['description']
+        new_tags = request.form['tags']
+        doc = DocumentParser(new_url, new_title, new_tags, new_description)
+        doc.build_profile()
+
+        queried_document.title = doc.title
+        queried_document.url = doc.url
+        queried_document.description = doc.description
+        queried_document.slug = doc.document_string
+        document_tags = [tag.tag for tag in queried_document.tags]
+        for tag in doc.tags:
+            if tag not in document_tags:
+                stored_tag = Tag.query.filter_by(tag=tag).first()
+                if stored_tag is None:
+                    new_tag = Tag(tag)
+                    db.session.add(new_tag)
+                    queried_document.tags.append(new_tag)
+                else:
+                    queried_document.tags.append(stored_tag)
+
+        queried_document.document_vector = func.to_tsvector(doc.document_string)
+        db.session.add(queried_document)
+        db.session.commit()
+
+        
+        #new_document_text = request.form['document_text']
+        #new_document_string = request.form['document_string']
+        #t = edit_documentlink(queried_link, new_url, new_title, new_description, new_tags, new_document_text)
+        #print(new_url, new_title)
+        #print(new_tags)
+        #print(url_for('document_link', id = id))
+        return redirect(url_for('documents.search'))
+    else:
+        flash_errors(form)
+        
+    return render_template('documents/edit_document.html', 
+        title = 'Edit Document Info',
+        form=form,
+        document_id=id
+        #document_info=l
+        )
+
 @blueprint.route('/search', methods=['GET', 'POST'])
 @login_required
 def search():
@@ -76,6 +140,7 @@ def search_results(page=1):
     search_params = parse_search_params(request.args['search_form_input'])
     
     documents = DocumentLink.query.with_entities(
+                        DocumentLink.id,
                         DocumentLink.title,
                         DocumentLink.url,
                         (

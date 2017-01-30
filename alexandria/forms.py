@@ -138,6 +138,12 @@ class NewDocumentForm(Form):
 
         return True
 
+class EditDocumentForm(Form):
+    url = StringField('url', validators=[DataRequired()])
+    title = StringField('title', validators=[DataRequired()])
+    tags = StringField('tags', validators=[DataRequired()])
+    description = TextAreaField('description', validators=[DataRequired()])
+
 class SearchForm(Form):
     search = StringField('Search the docs', validators=[DataRequired()])
 

@@ -1,6 +1,10 @@
 from stop_words import get_stop_words
 import regex as r
 
+def parse_tags(tags):
+    parsed_tags = [tag.strip().lower() for tag in tags.split(',')]
+    return parsed_tags
+
 class DocumentParser(object):
     
     def __init__(self, url, title, tags, description, raw_text=None):

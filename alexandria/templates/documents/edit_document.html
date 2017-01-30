@@ -1,0 +1,23 @@
+
+{% extends "layout.html" %}
+{% block content %}
+<div class="col-lg-6">
+</br>
+<h2>Edit Document Info</h2>
+<form action="{{ url_for('documents.edit_document', id=document_id) }}" method="POST">
+    <div class="form-group">
+        {{form.url.label}}
+        {{form.url(placeholder="eg. https://www.google.com", class_="form-control")}}
+        {{form.title.label}}
+        {{form.title(placeholder="eg. Google", class_="form-control")}}
+        {{form.tags.label}}
+        {{form.tags(placeholder="eg. search, search engine", class_="form-control")}}
+        {{form.description.label}}
+        {{form.description(placeholder="eg. A site for finding stuff on the internet.", class_="form-control", rows="5")}}
+    </div>
+    {{ form.hidden_tag() }}
+<br>
+    <input class="btn btn-default btn-submit" type="submit" value="Edit Document Info" />
+</form>
+</div>
+{% endblock %}
